@@ -1,0 +1,22 @@
+{
+  "debug": true,
+  "branches": [
+    {
+      "name": "master",
+      "prerelease": true
+    }
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    ["@semantic-release/github", {
+      "assets": [
+        {"path": "dist/semantic-release", "name": "semantic-release-linux-amd64-${nextRelease.version}"},
+        {"path": "dist/semantic-release.exe", "name": "semantic-release-windows-amd64-${nextRelease.version}.exe"},
+        {"path": "dist/semantic-release-full", "name": "semantic-release-full-linux-amd64-${nextRelease.version}"},
+        {"path": "dist/semantic-release-full.exe", "name": "semantic-release-full-windows-amd64-${nextRelease.version}.exe"}
+      ]
+    }]
+  ]
+}
