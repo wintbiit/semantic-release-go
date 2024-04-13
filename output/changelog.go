@@ -20,7 +20,7 @@ func (o *ChangeLogOutput) Output(result *types.Result) error {
 	}
 	defer f.Close()
 
-	_, err = f.WriteString(fmt.Sprintf("# Changelog v%d.%d.%d\n\n", result.LatestRelease.Major, result.LatestRelease.Minor, result.LatestRelease.Patch))
+	_, err = f.WriteString(fmt.Sprintf("# Changelog %s\n\n", result.LatestRelease.Version.ShortString()))
 	if err != nil {
 		return err
 	}

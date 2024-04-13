@@ -20,6 +20,9 @@ var (
 )
 
 func init() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	log.Info().Str("version", version).Msg("Starting semantic-release-go")
+
 	if SEASON == "" {
 		log.Fatal().Msg("SEASON is required")
 	}
@@ -58,8 +61,6 @@ func init() {
 var version string = "v0.0.1"
 
 func main() {
-	log.Info().Str("version", version).Msg("Starting semantic-release-go")
-
 	start := time.Now()
 	semantic.Run(".", CHANNEL, SEASON, ANALYZER, REPO)
 	log.Info().Dur("duration", time.Since(start)).Msg("Finished semantic-release-go")

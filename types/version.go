@@ -20,7 +20,11 @@ type SemverTag struct {
 }
 
 func (v Version) String() string {
-	return fmt.Sprintf("%s %s v%d.%d.%d", v.Season, v.Channel, v.Major, v.Minor, v.Patch)
+	return fmt.Sprintf("%s %s %s", v.Season, v.Channel, v.ShortString())
+}
+
+func (v Version) ShortString() string {
+	return fmt.Sprintf("v%d.%d.%d", v.Major, v.Minor, v.Patch)
 }
 
 func (s SemverTag) String() string {
