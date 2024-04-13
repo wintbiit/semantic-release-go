@@ -21,9 +21,13 @@ type SemverTag struct {
 	Version
 }
 
+func (v Version) String() string {
+	return fmt.Sprintf("%s %s v%d.%d.%d", v.season, v.channel, v.major, v.minor, v.patch)
+}
+
 const VersionFormat = "%s %s v%d.%d.%d"
 
-func ValidTags(tags storer.ReferenceIter, season string, channel string) ([]SemverTag, error) {
+func History(tags storer.ReferenceIter, season string, channel string) ([]SemverTag, error) {
 	var semverTags []SemverTag
 	var ref *plumbing.Reference
 	var tagStr, currSeason, currChannel string
