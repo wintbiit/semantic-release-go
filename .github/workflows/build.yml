@@ -71,8 +71,8 @@ jobs:
       - run: go version
       - name: Build
         run: |
-          go build -trimpath -ldflags "-s -w" -o ./bin/semantic-release .
-          go build -trimpath -ldflags "-s -w" -tags "analyzer_angular output_teamcity" -o ./bin/semantic-release-full .
+          go build -trimpath -ldflags "-s -w -X main.version=${{ needs.release.outputs.new_version }}" -o ./bin/semantic-release .
+          go build -trimpath -ldflags "-s -w -X main.version=${{ needs.release.outputs.new_version }}" -tags "analyzer_angular output_teamcity" -o ./bin/semantic-release-full .
         working-directory: ./
       - name: Artifact
         uses: actions/upload-artifact@v3
@@ -93,8 +93,8 @@ jobs:
       - run: go version
       - name: Build
         run: |
-          go build -trimpath -ldflags "-s -w" -o ./bin/semantic-release.exe .
-          go build -trimpath -ldflags "-s -w" -tags "analyzer_angular output_teamcity" -o ./bin/semantic-release-full.exe .
+          go build -trimpath -ldflags "-s -w -X main.version=${{ needs.release.outputs.new_version }}" -o ./bin/semantic-release.exe .
+          go build -trimpath -ldflags "-s -w -X main.version=${{ needs.release.outputs.new_version }}" -tags "analyzer_angular output_teamcity" -o ./bin/semantic-release-full.exe .
         working-directory: ./
       - name: Artifact
         uses: actions/upload-artifact@v3
@@ -219,6 +219,8 @@ jobs:
             wulaguy/semantic-release-go:${{ needs.release.outputs.new_version }}
             ghcr.io/wintbiit/semantic-release-go:latest
             ghcr.io/wintbiit/semantic-release-go:${{ needs.release.outputs.new_version }}
+          build-args: |
+            VERSION=${{ needs.release.outputs.new_version }}
           labels: |
             org.opencontainers.image.source=https://github.com/wintbiit/semanitc-release-go
             org.opencontainers.image.revision=${{ github.sha }}

@@ -4,35 +4,20 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/wintbiit/semantic-release-go/types"
+
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/storer"
 )
 
-type Version struct {
-	season  string
-	channel string
-	major   int
-	minor   int
-	patch   int
-}
-
-type SemverTag struct {
-	*plumbing.Reference
-	Version
-}
-
-func (v Version) String() string {
-	return fmt.Sprintf("%s %s v%d.%d.%d", v.season, v.channel, v.major, v.minor, v.patch)
-}
-
 const VersionFormat = "%s %s v%d.%d.%d"
 
-func History(tags storer.ReferenceIter, season string, channel string) ([]SemverTag, error) {
-	var semverTags []SemverTag
+func History(tags storer.ReferenceIter, season string, channel string) ([]types.SemverTag, error) {
+	var semverTags []types.SemverTag
 	var ref *plumbing.Reference
 	var tagStr, currSeason, currChannel string
 	var major, minor, patch int
-	var semverTag SemverTag
+	var semverTag types.SemverTag
 	var err error
 
 	for {
@@ -53,14 +38,14 @@ func History(tags storer.ReferenceIter, season string, channel string) ([]Semver
 			continue
 		}
 
-		semverTag = SemverTag{
+		semverTag = types.SemverTag{
 			Reference: ref,
-			Version: Version{
-				season:  currSeason,
-				channel: currChannel,
-				major:   major,
-				minor:   minor,
-				patch:   patch,
+			Version: types.Version{
+				Season:  currSeason,
+				Channel: currChannel,
+				Major:   major,
+				Minor:   minor,
+				Patch:   patch,
 			},
 		}
 
@@ -70,17 +55,17 @@ func History(tags storer.ReferenceIter, season string, channel string) ([]Semver
 	return semverTags, nil
 }
 
-func SortTags(tags []SemverTag) {
+func SortTags(tags []types.SemverTag) {
 	// bubble sort
 	for i := 0; i < len(tags); i++ {
 		for j := 0; j < len(tags)-i-1; j++ {
-			if tags[j].major > tags[j+1].major {
+			if tags[j].Major > tags[j+1].Major {
 				tags[j], tags[j+1] = tags[j+1], tags[j]
-			} else if tags[j].major == tags[j+1].major {
-				if tags[j].minor > tags[j+1].minor {
+			} else if tags[j].Major == tags[j+1].Major {
+				if tags[j].Minor > tags[j+1].Minor {
 					tags[j], tags[j+1] = tags[j+1], tags[j]
-				} else if tags[j].minor == tags[j+1].minor {
-					if tags[j].patch > tags[j+1].patch {
+				} else if tags[j].Minor == tags[j+1].Minor {
+					if tags[j].Patch > tags[j+1].Patch {
 						tags[j], tags[j+1] = tags[j+1], tags[j]
 					}
 				}

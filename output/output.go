@@ -3,11 +3,11 @@ package output
 import (
 	"log"
 
-	"github.com/wintbiit/semantic-release-go/semantic"
+	"github.com/wintbiit/semantic-release-go/types"
 )
 
 type IOutput interface {
-	Output(result *semantic.Result) error
+	Output(result *types.Result) error
 }
 
 var registeredOutputs = make(map[string]IOutput)
@@ -20,7 +20,7 @@ func GetOutput(name string) IOutput {
 	return registeredOutputs[name]
 }
 
-func Output(result *semantic.Result) error {
+func Output(result *types.Result) error {
 	for name, output := range registeredOutputs {
 		log.Printf("Outputting result using %s", name)
 		err := output.Output(result)

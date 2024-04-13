@@ -1,10 +1,10 @@
 package output
 
-import "github.com/wintbiit/semantic-release-go/semantic"
+import "github.com/wintbiit/semantic-release-go/types"
 
 type ChangeLogOutput struct{}
 
-func (o *ChangeLogOutput) Output(result *semantic.Result) error {
+func (o *ChangeLogOutput) Output(result *types.Result) error {
 	return nil
 }
 

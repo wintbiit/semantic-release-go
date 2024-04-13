@@ -1,10 +1,10 @@
 package output
 
-import "github.com/wintbiit/semantic-release-go/semantic"
+import "github.com/wintbiit/semantic-release-go/types"
 
 type EnvOutput struct{}
 
-func (o *EnvOutput) Output(result *semantic.Result) error {
+func (o *EnvOutput) Output(result *types.Result) error {
 	return nil
 }
 

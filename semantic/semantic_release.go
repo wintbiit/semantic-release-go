@@ -1,79 +1,65 @@
 package semantic
 
 import (
-	"log"
-
-	"github.com/go-git/go-git/v5/plumbing/object"
-
 	"github.com/go-git/go-git/v5"
+	"github.com/rs/zerolog/log"
+	"github.com/wintbiit/semantic-release-go/analyze"
+	"github.com/wintbiit/semantic-release-go/types"
 
 	"github.com/wintbiit/semantic-release-go/utils"
 )
 
-const (
-	ChannelInsider = "insider"
-	ChannelAlpha   = "alpha"
-	ChannelBeta    = "beta"
-	ChannelRelease = "release"
-)
-
-type Result struct {
-	Season        string
-	Channel       string
-	NextRelease   utils.Version
-	LatestRelease utils.Version
-	Commits       []*object.Commit
-}
-
 func Run(path, channel, season, analyzer string) {
 	r, err := git.PlainOpen(path)
 	if err != nil {
-		log.Fatalf("Not a git repository: %v", err)
-		return
+		log.Fatal().Err(err).Msg("Not a git repository")
+	}
+
+	result := &types.Result{
+		Season:  season,
+		Channel: channel,
 	}
 
 	tags, err := r.Tags()
 	if err != nil {
-		log.Fatalf("Failed to get tags: %v", err)
-		return
+		log.Fatal().Err(err).Msg("Failed to get tags")
 	}
 
 	scannedTags, err := utils.History(tags, season, channel)
 	if err != nil {
-		log.Fatalf("Failed to scan tags: %v", err)
-		return
+		log.Fatal().Err(err).Msg("Failed to scan tags")
 	}
 
 	currentCommit, err := r.Head()
 	if err != nil {
-		log.Fatalf("Failed to get current commit: %v", err)
-		return
+		log.Fatal().Err(err).Msg("Failed to get current commit")
 	}
 
-	log.Printf("Current commit: %v", utils.HashShort(currentCommit.Hash()))
-	log.Printf("Using channel: %s, season: %s", channel, season)
-
-	var lastVersion utils.SemverTag
+	log.Info().Msgf("Current commit: %v", utils.HashShort(currentCommit.Hash()))
+	log.Info().Msgf("Using channel: %s, season: %s", channel, season)
 
 	if len(scannedTags) == 0 {
-		log.Printf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", season, channel)
+		log.Info().Msgf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", season, channel)
 	} else {
-		lastVersion = scannedTags[len(scannedTags)-1]
-		log.Printf("Last release: %s", lastVersion.Version.String())
+		result.LatestRelease = scannedTags[len(scannedTags)-1]
+		log.Info().Msgf("Last release: %s", result.LatestRelease.String())
 	}
 
 	// get commits since last version
 	commits, err := r.Log(&git.LogOptions{From: currentCommit.Hash()})
 	if err != nil {
-		log.Fatalf("Failed to get commits: %v", err)
-		return
+		log.Fatal().Err(err).Msg("Failed to get commits")
 	}
 
-	sinceCommits, err := utils.CommitsSince(commits, lastVersion.Hash().String())
+	sinceCommits, err := utils.CommitsSince(commits, result.LatestRelease.Hash().String())
 	if err != nil {
-		log.Fatalf("Failed to get commits since last version: %v", err)
-		return
+		log.Fatal().Err(err).Msg("Failed to get commits since last version")
 	}
 
-	log.Printf("Commits since last version: %d", len(sinceCommits))
+	result.Commits = sinceCommits
+	log.Info().Msgf("Commits since last version: %d", len(sinceCommits))
+	log.Info().Msg("Analyzing commits...")
+
+	// analyze commits
+	err = analyze.Analyze(result, analyzer)
 }

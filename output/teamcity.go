@@ -5,12 +5,12 @@ package output
 import (
 	"fmt"
 
-	"github.com/wintbiit/semantic-release-go/semantic"
+	"github.com/wintbiit/semantic-release-go/types"
 )
 
 type TeamcityOutput struct{}
 
-func (o *TeamcityOutput) Output(result *semantic.Result) error {
+func (o *TeamcityOutput) Output(result *types.Result) error {
 	return nil
 }
 

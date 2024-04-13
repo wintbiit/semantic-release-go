@@ -2,11 +2,13 @@
 
 package analyze
 
-import "github.com/wintbiit/semantic-release-go/semantic"
+import (
+	"github.com/wintbiit/semantic-release-go/types"
+)
 
 type AngularAnalyzer struct{}
 
-func (a *AngularAnalyzer) Analyze(result *semantic.Result) error {
+func (a *AngularAnalyzer) Analyze(result *types.Result) error {
 	return nil
 }
 
