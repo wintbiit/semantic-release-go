@@ -41,7 +41,7 @@ func History(tags storer.ReferenceIter, season string, channel string) ([]types.
 		semverTag = types.SemverTag{
 			Reference: ref,
 			Version: types.Version{
-				Season:  currSeason,
+				Branch:  currSeason,
 				Channel: currChannel,
 				Major:   major,
 				Minor:   minor,

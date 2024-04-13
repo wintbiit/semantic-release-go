@@ -23,7 +23,7 @@ func Run(opt types.SemanticOptions) {
 	}
 
 	result := &types.Result{
-		Season:  opt.Season,
+		Branch:  opt.Branch,
 		Channel: opt.Channel,
 		Repo:    opt.Repo,
 		Built:   time.Now(),
@@ -34,7 +34,7 @@ func Run(opt types.SemanticOptions) {
 		log.Fatal().Err(err).Msg("Failed to get tags")
 	}
 
-	scannedTags, err := utils.History(tags, opt.Season, opt.Channel)
+	scannedTags, err := utils.History(tags, opt.Branch, opt.Channel)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to scan tags")
 	}
@@ -45,10 +45,10 @@ func Run(opt types.SemanticOptions) {
 	}
 
 	log.Info().Msgf("Current commit: %v", utils.HashShort(currentCommit.Hash()))
-	log.Info().Msgf("Using channel: %s, season: %s", opt.Channel, opt.Season)
+	log.Info().Msgf("Using channel: %s, branch: %s", opt.Channel, opt.Branch)
 
 	if len(scannedTags) == 0 {
-		log.Info().Msgf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", opt.Season, opt.Channel)
+		log.Info().Msgf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", opt.Branch, opt.Channel)
 	} else {
 		result.LatestRelease = scannedTags[len(scannedTags)-1]
 		log.Info().Msgf("Last release: %s", utils.HashShort(result.LatestRelease))
@@ -78,7 +78,7 @@ func Run(opt types.SemanticOptions) {
 		Version:   result.LatestRelease.Version,
 	}
 	result.NextRelease.Version.Channel = opt.Channel
-	result.NextRelease.Version.Season = opt.Season
+	result.NextRelease.Version.Branch = opt.Branch
 
 	// analyze commits
 	if err = analyze.Analyze(result, &opt, opt.Analyzer); err != nil {

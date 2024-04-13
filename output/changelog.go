@@ -10,15 +10,13 @@ import (
 
 type ChangeLogOutput struct{}
 
-var fileName = "CHANGELOG.md"
-
 func (o *ChangeLogOutput) Output(result *types.Result, opt *types.SemanticOptions) error {
-	if !opt.Changelog {
+	if opt.Dry || opt.Changelog == "" {
 		log.Info().Msg("Changelog output disabled")
 		return nil
 	}
 	log.Info().Msg("Outputting changelog")
-	f, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
+	f, err := os.OpenFile(opt.Changelog, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
 	if err != nil {
 		return err
 	}
@@ -29,7 +27,7 @@ func (o *ChangeLogOutput) Output(result *types.Result, opt *types.SemanticOption
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("> `%s` `%s` at %s\n", result.Season, result.Channel, result.Built.Format("2006-01-02 15:04:05")))
+	_, err = f.WriteString(fmt.Sprintf("> `%s` `%s` at %s\n", result.Branch, result.Channel, result.Built.Format("2006-01-02 15:04:05")))
 
 	for title, notes := range result.ReleaseNotes {
 		log.Info().Msgf("Writing %s", title)
@@ -58,8 +56,4 @@ func (o *ChangeLogOutput) Output(result *types.Result, opt *types.SemanticOption
 
 func init() {
 	RegisterOutput("changelog", &ChangeLogOutput{})
-
-	if os.Getenv("CHANGELOG_FILE") != "" {
-		fileName = os.Getenv("CHANGELOG_FILE")
-	}
 }

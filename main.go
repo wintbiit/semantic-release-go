@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/wintbiit/semantic-release-go/utils"
+
 	"github.com/wintbiit/semantic-release-go/types"
 
 	"github.com/rs/zerolog"
@@ -40,13 +42,13 @@ func main() {
 
 	flag.StringVar(&opt.Path, "path", ".", "Path to git repository")
 	flag.StringVar(&opt.Channel, "channel", os.Getenv("CHANNEL"), "Channel to release")
-	flag.StringVar(&opt.Season, "season", os.Getenv("SEASON"), "Season to release")
+	flag.StringVar(&opt.Branch, "branch", os.Getenv("branch"), "Branch to release")
 	flag.StringVar(&opt.Analyzer, "analyzer", os.Getenv("ANALYZER"), "Analyzer to use")
 	flag.StringVar(&opt.Repo, "repo", os.Getenv("REPO"), "Repository to release")
 	flag.BoolVar(&opt.Dry, "dry", false, "Dry run")
 	flag.BoolVar(&opt.Tag, "tag", true, "Tag changes")
 	flag.BoolVar(&opt.Push, "push", true, "Push changes")
-	flag.BoolVar(&opt.Changelog, "changelog", true, "Generate changelog")
+	flag.StringVar(&opt.Changelog, "changelog", "Changelog.md", "Generate changelog")
 	flag.BoolVar(&debug, "debug", false, "Debug mode")
 	flag.Parse()
 
@@ -56,11 +58,15 @@ func main() {
 
 	if opt.Channel == "" {
 		opt.Channel = types.ChannelInsider
-		log.Warn().Msg("CHANNEL not set, using insider channel")
+		log.Warn().Msg("channel not set, using insider channel")
 	}
 
-	if opt.Season == "" {
-		log.Fatal().Msg("SEASON not set")
+	if !utils.ChannelValid(opt.Channel) {
+		log.Fatal().Str("channel", opt.Channel).Msg("Invalid channel")
+	}
+
+	if opt.Branch == "" {
+		log.Fatal().Msg("branch not set")
 	}
 
 	if opt.Analyzer == "" {

@@ -21,18 +21,18 @@ const (
 type SemanticOptions struct {
 	Path      string
 	Channel   string
-	Season    string
+	Branch    string
 	Analyzer  string
 	Repo      string
 	Dry       bool
 	Tag       bool
 	Push      bool
-	Changelog bool
+	Changelog string
 }
 
 type Result struct {
 	Repo          string
-	Season        string
+	Branch        string
 	Channel       string
 	Built         time.Time
 	NextRelease   SemverTag

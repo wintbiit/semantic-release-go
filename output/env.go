@@ -15,7 +15,7 @@ func (o *EnvOutput) Output(result *types.Result, _ *types.SemanticOptions) error
 
 	os.Setenv("RELEASE_CHANNEL", result.Channel)
 	os.Setenv("RELEASE_TYPE", result.ReleaseType)
-	os.Setenv("RELEASE_SEASON", result.Season)
+	os.Setenv("RELEASE_BRANCH", result.Branch)
 	os.Setenv("RELEASE_REPO", result.Repo)
 	os.Setenv("RELEASE_BUILT", result.Built.Format("2006-01-02 15:04:05"))
 	os.Setenv("RELEASE_NEXT_VERSION", result.NextRelease.Version.ShortString())

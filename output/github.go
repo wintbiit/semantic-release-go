@@ -22,7 +22,7 @@ func (o *GithubOutput) Output(result *types.Result, _ *types.SemanticOptions) er
 
 	setState("channel", result.Channel)
 	setState("release.type", result.ReleaseType)
-	setState("season", result.Season)
+	setState("branch", result.Branch)
 	setState("repo", result.Repo)
 	setOutput("built", result.Built.Format("2006-01-02 15:04:05"))
 	setOutput("release.next.version", result.NextRelease.Version.ShortString())
