@@ -12,7 +12,7 @@ import (
 const CommitIgnoreTag = "[skip ci]"
 
 type IAnalyzer interface {
-	Analyze(result *types.Result) error
+	Analyze(result *types.Result, opt *types.SemanticOptions) error
 }
 
 var registeredAnalyzers = make(map[string]IAnalyzer)
@@ -34,11 +34,11 @@ func GetAnalyzer(name string) IAnalyzer {
 	return registeredAnalyzers[name]
 }
 
-func Analyze(result *types.Result, analyzer string) error {
+func Analyze(result *types.Result, opt *types.SemanticOptions, analyzer string) error {
 	a := GetAnalyzer(analyzer)
 	if a == nil {
 		return errors.New(fmt.Sprintf("Analyzer %s not found", analyzer))
 	}
 
-	return a.Analyze(result)
+	return a.Analyze(result, opt)
 }

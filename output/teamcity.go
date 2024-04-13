@@ -13,7 +13,7 @@ import (
 
 type TeamcityOutput struct{}
 
-func (o *TeamcityOutput) Output(result *types.Result) error {
+func (o *TeamcityOutput) Output(result *types.Result, _ *types.SemanticOptions) error {
 	log.Info().Msg("Output to teamcity")
 
 	teamCityTag(result.Channel)

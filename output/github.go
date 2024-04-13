@@ -2,19 +2,22 @@ package output
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/rs/zerolog/log"
 	"github.com/wintbiit/semantic-release-go/types"
-	"os"
 )
 
 type GithubOutput struct{}
 
-var githubState = os.Getenv("GITHUB_STATE")
-var githubOutput = os.Getenv("GITHUB_OUTPUT")
-var stateFile *os.File
-var outputFile *os.File
+var (
+	githubState  = os.Getenv("GITHUB_STATE")
+	githubOutput = os.Getenv("GITHUB_OUTPUT")
+	stateFile    *os.File
+	outputFile   *os.File
+)
 
-func (o *GithubOutput) Output(result *types.Result) error {
+func (o *GithubOutput) Output(result *types.Result, _ *types.SemanticOptions) error {
 	log.Info().Msg("Outputting to github")
 
 	setState("channel", result.Channel)

@@ -2,14 +2,15 @@ package output
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/rs/zerolog/log"
 	"github.com/wintbiit/semantic-release-go/types"
-	"os"
 )
 
 type EnvOutput struct{}
 
-func (o *EnvOutput) Output(result *types.Result) error {
+func (o *EnvOutput) Output(result *types.Result, _ *types.SemanticOptions) error {
 	log.Info().Msg("Outputting to env")
 
 	os.Setenv("RELEASE_CHANNEL", result.Channel)

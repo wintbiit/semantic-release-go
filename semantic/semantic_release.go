@@ -1,7 +1,11 @@
 package semantic
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
+
+	"github.com/go-git/go-git/v5/config"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
@@ -12,16 +16,16 @@ import (
 	"github.com/wintbiit/semantic-release-go/utils"
 )
 
-func Run(path, channel, season, analyzer, repo string) {
-	r, err := git.PlainOpen(path)
+func Run(opt types.SemanticOptions) {
+	r, err := git.PlainOpen(opt.Path)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Not a git repository")
 	}
 
 	result := &types.Result{
-		Season:  season,
-		Channel: channel,
-		Repo:    repo,
+		Season:  opt.Season,
+		Channel: opt.Channel,
+		Repo:    opt.Repo,
 		Built:   time.Now(),
 	}
 
@@ -30,7 +34,7 @@ func Run(path, channel, season, analyzer, repo string) {
 		log.Fatal().Err(err).Msg("Failed to get tags")
 	}
 
-	scannedTags, err := utils.History(tags, season, channel)
+	scannedTags, err := utils.History(tags, opt.Season, opt.Channel)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to scan tags")
 	}
@@ -41,10 +45,10 @@ func Run(path, channel, season, analyzer, repo string) {
 	}
 
 	log.Info().Msgf("Current commit: %v", utils.HashShort(currentCommit.Hash()))
-	log.Info().Msgf("Using channel: %s, season: %s", channel, season)
+	log.Info().Msgf("Using channel: %s, season: %s", opt.Channel, opt.Season)
 
 	if len(scannedTags) == 0 {
-		log.Info().Msgf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", season, channel)
+		log.Info().Msgf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", opt.Season, opt.Channel)
 	} else {
 		result.LatestRelease = scannedTags[len(scannedTags)-1]
 		log.Info().Msgf("Last release: %s", utils.HashShort(result.LatestRelease))
@@ -75,7 +79,7 @@ func Run(path, channel, season, analyzer, repo string) {
 	}
 
 	// analyze commits
-	if err = analyze.Analyze(result, analyzer); err != nil {
+	if err = analyze.Analyze(result, &opt, opt.Analyzer); err != nil {
 		log.Fatal().Err(err).Msg("Failed to analyze commits")
 	}
 
@@ -87,7 +91,33 @@ func Run(path, channel, season, analyzer, repo string) {
 	log.Info().Str("next_release", result.NextRelease.String()).Str("release_type", result.ReleaseType).Msg("New version to release")
 
 	// output result
-	if err = output.Output(result); err != nil {
-		log.Fatal().Err(err).Msg("Failed to output result")
+	outputs := output.Output(result, &opt)
+	log.Info().Msg("Output done")
+	j, _ := json.MarshalIndent(outputs, "", "  ")
+	fmt.Println(string(j))
+
+	if !opt.Dry {
+		if opt.Tag {
+			// create tag
+			if _, err = r.CreateTag(result.NextRelease.Version.Tag(), result.NextRelease.Hash(), &git.CreateTagOptions{
+				Message: result.NextRelease.Version.String(),
+			}); err != nil {
+				log.Fatal().Err(err).Msg("Failed to create tag")
+			}
+		}
+
+		if opt.Push {
+			// push tag
+			err = r.Push(&git.PushOptions{
+				RemoteName: "origin",
+				RefSpecs: []config.RefSpec{
+					config.RefSpec("refs/tags/" + result.NextRelease.Version.Tag() + ":refs/tags/" + result.NextRelease.Version.Tag()),
+				},
+			})
+
+			if err != nil {
+				log.Fatal().Err(err).Msg("Failed to push tag")
+			}
+		}
 	}
 }

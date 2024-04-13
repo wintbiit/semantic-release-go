@@ -118,7 +118,7 @@ type info struct {
 	*types.ReleaseNote
 }
 
-func (a *AngularAnalyzer) Analyze(result *types.Result) error {
+func (a *AngularAnalyzer) Analyze(result *types.Result, _ *types.SemanticOptions) error {
 	result.ReleaseNotes = make(map[string][]types.ReleaseNote)
 	var wg sync.WaitGroup
 	wg.Add(len(result.Commits))

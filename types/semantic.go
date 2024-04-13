@@ -18,6 +18,18 @@ const (
 	ReleaseTypePatch = "patch"
 )
 
+type SemanticOptions struct {
+	Path      string
+	Channel   string
+	Season    string
+	Analyzer  string
+	Repo      string
+	Dry       bool
+	Tag       bool
+	Push      bool
+	Changelog bool
+}
+
 type Result struct {
 	Repo          string
 	Season        string

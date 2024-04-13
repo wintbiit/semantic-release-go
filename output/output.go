@@ -1,7 +1,6 @@
 package output
 
 import (
-	"errors"
 	"sync"
 
 	"github.com/rs/zerolog/log"
@@ -10,7 +9,7 @@ import (
 )
 
 type IOutput interface {
-	Output(result *types.Result) error
+	Output(result *types.Result, opt *types.SemanticOptions) error
 }
 
 var registeredOutputs = make(map[string]IOutput)
@@ -23,31 +22,24 @@ func GetOutput(name string) IOutput {
 	return registeredOutputs[name]
 }
 
-func Output(result *types.Result) error {
-	errorM := make(map[string]error, len(registeredOutputs))
+func Output(result *types.Result, opt *types.SemanticOptions) map[string]bool {
+	ok := make(map[string]bool, len(registeredOutputs))
 	var wg sync.WaitGroup
 	wg.Add(len(registeredOutputs))
 	for name, output := range registeredOutputs {
 		go func(name string, output IOutput) {
 			defer wg.Done()
 			log.Info().Msgf("Outputting result using %s", name)
-			err := output.Output(result)
+			err := output.Output(result, opt)
+			ok[name] = true
 			if err != nil {
-				errorM[name] = err
+				log.Error().Err(err).Msgf("Failed to output using %s", name)
+				ok[name] = false
 			}
 		}(name, output)
 	}
 
 	wg.Wait()
 
-	if len(errorM) > 0 {
-		err := "Failed to output using: "
-		for name, e := range errorM {
-			err += name + ": " + e.Error() + ", "
-		}
-
-		return errors.New(err)
-	}
-
-	return nil
+	return ok
 }

@@ -12,7 +12,11 @@ type ChangeLogOutput struct{}
 
 var fileName = "CHANGELOG.md"
 
-func (o *ChangeLogOutput) Output(result *types.Result) error {
+func (o *ChangeLogOutput) Output(result *types.Result, opt *types.SemanticOptions) error {
+	if !opt.Changelog {
+		log.Info().Msg("Changelog output disabled")
+		return nil
+	}
 	log.Info().Msg("Outputting changelog")
 	f, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
 	if err != nil {
