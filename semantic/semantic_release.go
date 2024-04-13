@@ -56,9 +56,9 @@ func Run(opt types.SemanticOptions) {
 	}
 
 	// get commits since last version
-	commits, err := r.Log(&git.LogOptions{From: currentCommit.Hash()})
+	commits, err := r.CommitObjects()
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to get commits")
+		log.Fatal().Err(err).Msg("Failed to get commit objects")
 	}
 
 	sinceCommits, err := utils.CommitsSince(commits, utils.HashShort(currentCommit.Hash()))
