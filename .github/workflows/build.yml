@@ -115,6 +115,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Fetch Previous version
         id: get-previous-tag
         uses: actions-ecosystem/action-get-latest-tag@v1.6.0
