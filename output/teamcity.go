@@ -30,6 +30,7 @@ func (o *TeamcityOutput) Output(result *types.Result, _ *types.SemanticOptions) 
 	teamCityParam("semantic.release.next.major", fmt.Sprintf("%d", result.NextRelease.Major))
 	teamCityParam("semantic.release.next.minor", fmt.Sprintf("%d", result.NextRelease.Minor))
 	teamCityParam("semantic.release.next.patch", fmt.Sprintf("%d", result.NextRelease.Patch))
+	teamCityParam("semantic.release.next.tag", result.NextRelease.Tag())
 	if result.LatestRelease.Reference != nil {
 		teamCityParam("semantic.release.latest.version", result.LatestRelease.Version.ShortString())
 		teamCityParam("semantic.release.latest.hash", utils.HashShort(result.LatestRelease.Hash()))
@@ -51,5 +52,5 @@ func teamCityParam(key, value string) {
 }
 
 func teamCityTag(tag string) {
-	fmt.Printf("##teamcity[addBuildTag name='%s']\n", tag)
+	fmt.Printf("##teamcity[addBuildTag '%s']\n", tag)
 }
