@@ -34,7 +34,7 @@ var version string = "v0.0.1"
 func main() {
 	start := time.Now()
 	defer func() {
-		log.Info().Str("duration", time.Since(start).String()).Msg("Semantic release done")
+		log.Info().Str("elapsed", time.Since(start).String()).Msg("Semantic release done")
 	}()
 
 	var opt types.SemanticOptions
@@ -71,11 +71,11 @@ func main() {
 
 	if opt.Analyzer == "" {
 		opt.Analyzer = "angular"
-		log.Warn().Msg("ANALYZER not set, using angular analyzer")
+		log.Warn().Msg("analyzer not set, using angular analyzer")
 	}
 
 	if opt.Repo == "" {
-		log.Fatal().Msg("REPO not set")
+		log.Fatal().Msg("repo url not set")
 	}
 
 	semantic.Run(opt)
