@@ -3,9 +3,12 @@ package analyze
 import (
 	"errors"
 	"fmt"
+	"github.com/rs/zerolog/log"
 
 	"github.com/wintbiit/semantic-release-go/types"
 )
+
+const CommitIgnoreTag = "[skip ci]"
 
 type IAnalyzer interface {
 	Analyze(result *types.Result) error
@@ -18,6 +21,15 @@ func RegisterAnalyzer(name string, analyzer IAnalyzer) {
 }
 
 func GetAnalyzer(name string) IAnalyzer {
+	registeredAnalyzers := registeredAnalyzers
+	if len(registeredAnalyzers) == 0 {
+		log.Fatal().Msg("No analyzers registered")
+	}
+
+	if _, ok := registeredAnalyzers[name]; !ok {
+		return nil
+	}
+
 	return registeredAnalyzers[name]
 }
 

@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"strings"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -14,20 +16,28 @@ var (
 	SEASON   = os.Getenv("SEASON")
 	CHANNEL  = os.Getenv("CHANNEL")
 	ANALYZER = os.Getenv("ANALYZER")
+	REPO     = os.Getenv("REPO")
 )
 
 func init() {
 	if SEASON == "" {
 		log.Fatal().Msg("SEASON is required")
 	}
+	SEASON = strings.ToLower(SEASON)
 
 	if CHANNEL == "" {
 		CHANNEL = types.ChannelInsider
 		log.Warn().Msg("CHANNEL is not set, use insider by default")
 	}
+	CHANNEL = strings.ToLower(CHANNEL)
 
 	if ANALYZER == "" {
 		ANALYZER = "angular"
+	}
+	ANALYZER = strings.ToLower(ANALYZER)
+
+	if REPO == "" {
+		log.Fatal().Msg("REPO is required")
 	}
 
 	logF, err := os.OpenFile(".semantic-release.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
@@ -39,6 +49,10 @@ func init() {
 		zerolog.ConsoleWriter{Out: os.Stderr},
 		zerolog.SyncWriter(logF),
 	))
+
+	if os.Getenv("DEBUG") == "true" {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
 }
 
 var version string = "v0.0.1"
@@ -46,5 +60,7 @@ var version string = "v0.0.1"
 func main() {
 	log.Info().Str("version", version).Msg("Starting semantic-release-go")
 
-	semantic.Run(".", "insider", SEASON, ANALYZER)
+	start := time.Now()
+	semantic.Run(".", CHANNEL, SEASON, ANALYZER, REPO)
+	log.Info().Dur("duration", time.Since(start)).Msg("Finished semantic-release-go")
 }

@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-
 	"github.com/go-git/go-git/v5/plumbing"
 )
 
@@ -24,5 +23,9 @@ func (v Version) String() string {
 }
 
 func (s SemverTag) String() string {
-	return s.Version.String() + " " + s.Reference.Hash().String()
+	return s.Version.String() + " " + s.Hash().String()[0:7]
+}
+
+func (v Version) SameFrom(s Version) bool {
+	return v.Season == s.Season && v.Channel == s.Channel && v.Major == s.Major && v.Minor == s.Minor && v.Patch == s.Patch
 }
