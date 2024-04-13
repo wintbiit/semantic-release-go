@@ -77,6 +77,8 @@ func Run(opt types.SemanticOptions) {
 		Reference: currentCommit,
 		Version:   result.LatestRelease.Version,
 	}
+	result.NextRelease.Version.Channel = opt.Channel
+	result.NextRelease.Version.Season = opt.Season
 
 	// analyze commits
 	if err = analyze.Analyze(result, &opt, opt.Analyzer); err != nil {
