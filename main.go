@@ -63,5 +63,5 @@ var version string = "v0.0.1"
 func main() {
 	start := time.Now()
 	semantic.Run(".", CHANNEL, SEASON, ANALYZER, REPO)
-	log.Info().Dur("duration", time.Since(start)).Msg("Finished semantic-release-go")
+	log.Info().Str("duration", time.Since(start).String()).Msg("Semantic release done")
 }

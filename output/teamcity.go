@@ -18,6 +18,7 @@ func (o *TeamcityOutput) Output(result *types.Result) error {
 
 	teamCityTag(result.Channel)
 	teamCityTag(result.Season)
+	teamCityTag(result.ReleaseType)
 
 	teamCityParam("channel", result.Channel)
 	teamCityParam("release.type", result.ReleaseType)
@@ -29,11 +30,13 @@ func (o *TeamcityOutput) Output(result *types.Result) error {
 	teamCityParam("release.next.major", fmt.Sprintf("%d", result.NextRelease.Major))
 	teamCityParam("release.next.minor", fmt.Sprintf("%d", result.NextRelease.Minor))
 	teamCityParam("release.next.patch", fmt.Sprintf("%d", result.NextRelease.Patch))
-	teamCityParam("release.latest.version", result.LatestRelease.Version.ShortString())
-	teamCityParam("release.latest.hash", utils.HashShort(result.LatestRelease.Hash()))
-	teamCityParam("release.latest.major", fmt.Sprintf("%d", result.LatestRelease.Major))
-	teamCityParam("release.latest.minor", fmt.Sprintf("%d", result.LatestRelease.Minor))
-	teamCityParam("release.latest.patch", fmt.Sprintf("%d", result.LatestRelease.Patch))
+	if result.LatestRelease.Reference != nil {
+		teamCityParam("release.latest.version", result.LatestRelease.Version.ShortString())
+		teamCityParam("release.latest.hash", utils.HashShort(result.LatestRelease.Hash()))
+		teamCityParam("release.latest.major", fmt.Sprintf("%d", result.LatestRelease.Major))
+		teamCityParam("release.latest.minor", fmt.Sprintf("%d", result.LatestRelease.Minor))
+		teamCityParam("release.latest.patch", fmt.Sprintf("%d", result.LatestRelease.Patch))
+	}
 
 	log.Info().Msg("Teamcity output done")
 	return nil

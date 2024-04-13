@@ -24,3 +24,6 @@ go.work
 bin
 
 .idea
+
+CHANGELOG.md
+.semantic-release.log
