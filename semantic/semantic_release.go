@@ -52,7 +52,7 @@ func Run(opt types.SemanticOptions) {
 		log.Info().Msgf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", opt.Branch, opt.Channel)
 	} else {
 		result.LatestRelease = scannedTags[len(scannedTags)-1]
-		log.Info().Msgf("Last release: %s", utils.HashShort(result.LatestRelease))
+		log.Info().Msgf("Last release: %s", result.LatestRelease.String())
 	}
 
 	// get commits since last version
@@ -60,6 +60,8 @@ func Run(opt types.SemanticOptions) {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to get commit objects")
 	}
+
+	log.Debug().Msgf("Commit objects: %v", commits)
 
 	sinceCommits, err := utils.CommitsSince(commits, utils.HashShort(currentCommit.Hash()))
 	if err != nil {
