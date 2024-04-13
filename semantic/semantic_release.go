@@ -47,7 +47,8 @@ func Run(opt types.SemanticOptions) {
 	log.Info().Msgf("Current commit: %v", utils.HashShort(currentCommit.Hash()))
 	log.Info().Msgf("Using channel: %s, branch: %s", opt.Channel, opt.Branch)
 
-	if len(scannedTags) == 0 {
+	initRelease := len(scannedTags) == 0
+	if initRelease {
 		log.Info().Msgf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", opt.Branch, opt.Channel)
 	} else {
 		result.LatestRelease = scannedTags[len(scannedTags)-1]
@@ -85,9 +86,15 @@ func Run(opt types.SemanticOptions) {
 		log.Fatal().Err(err).Msg("Failed to analyze commits")
 	}
 
-	if result.NextRelease.Version.SameFrom(result.LatestRelease.Version) {
-		log.Info().Msg("No new version to release")
-		return
+	if !initRelease {
+		if result.NextRelease.Version.SameFrom(result.LatestRelease.Version) {
+			log.Info().Msg("No new version to release")
+			return
+		}
+	} else {
+		result.NextRelease.Version.Major = 1
+		result.NextRelease.Version.Minor = 0
+		result.NextRelease.Version.Patch = 0
 	}
 
 	log.Info().Str("next_release", result.NextRelease.String()).Str("release_type", result.ReleaseType).Msg("New version to release")
