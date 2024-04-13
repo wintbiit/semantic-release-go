@@ -1,12 +1,13 @@
 package semantic
 
 import (
+	"time"
+
 	"github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
 	"github.com/wintbiit/semantic-release-go/analyze"
 	"github.com/wintbiit/semantic-release-go/output"
 	"github.com/wintbiit/semantic-release-go/types"
-	"time"
 
 	"github.com/wintbiit/semantic-release-go/utils"
 )

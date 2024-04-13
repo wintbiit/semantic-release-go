@@ -3,6 +3,7 @@ package analyze
 import (
 	"errors"
 	"fmt"
+
 	"github.com/rs/zerolog/log"
 
 	"github.com/wintbiit/semantic-release-go/types"

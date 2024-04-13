@@ -3,10 +3,11 @@
 package analyze
 
 import (
-	"github.com/wintbiit/semantic-release-go/utils"
 	"slices"
 	"strings"
 	"sync"
+
+	"github.com/wintbiit/semantic-release-go/utils"
 
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/rs/zerolog/log"

@@ -2,9 +2,10 @@ package output
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/rs/zerolog/log"
 	"github.com/wintbiit/semantic-release-go/types"
-	"os"
 )
 
 type ChangeLogOutput struct{}
