@@ -7,9 +7,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/wintbiit/semantic-release-go/git"
+
 	"github.com/wintbiit/semantic-release-go/utils"
 
-	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/rs/zerolog/log"
 	"github.com/wintbiit/semantic-release-go/types"
 )
@@ -125,7 +126,7 @@ func (a *AngularAnalyzer) Analyze(result *types.Result, _ *types.SemanticOptions
 	ch := make(chan info)
 
 	for _, commit := range result.Commits {
-		go func(commit *object.Commit) {
+		go func(commit *git.Commit) {
 			defer wg.Done()
 			title := cleanTitle(commit.Message)
 			if title == "" {

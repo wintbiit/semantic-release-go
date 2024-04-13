@@ -19,13 +19,13 @@ func (o *EnvOutput) Output(result *types.Result, _ *types.SemanticOptions) error
 	os.Setenv("RELEASE_REPO", result.Repo)
 	os.Setenv("RELEASE_BUILT", result.Built.Format("2006-01-02 15:04:05"))
 	os.Setenv("RELEASE_NEXT_VERSION", result.NextRelease.Version.ShortString())
-	os.Setenv("RELEASE_NEXT_HASH", result.NextRelease.Hash().String())
+	os.Setenv("RELEASE_NEXT_HASH", result.NextRelease.Hash)
 	os.Setenv("RELEASE_NEXT_MAJOR", fmt.Sprintf("%d", result.NextRelease.Major))
 	os.Setenv("RELEASE_NEXT_MINOR", fmt.Sprintf("%d", result.NextRelease.Minor))
 	os.Setenv("RELEASE_NEXT_PATCH", fmt.Sprintf("%d", result.NextRelease.Patch))
-	if result.LatestRelease.Reference != nil {
+	if result.LatestRelease.Commit != nil {
 		os.Setenv("RELEASE_LATEST_VERSION", result.LatestRelease.Version.ShortString())
-		os.Setenv("RELEASE_LATEST_HASH", result.LatestRelease.Hash().String())
+		os.Setenv("RELEASE_LATEST_HASH", result.LatestRelease.Hash)
 		os.Setenv("RELEASE_LATEST_MAJOR", fmt.Sprintf("%d", result.LatestRelease.Major))
 		os.Setenv("RELEASE_LATEST_MINOR", fmt.Sprintf("%d", result.LatestRelease.Minor))
 		os.Setenv("RELEASE_LATEST_PATCH", fmt.Sprintf("%d", result.LatestRelease.Patch))

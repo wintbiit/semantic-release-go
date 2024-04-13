@@ -11,6 +11,7 @@ RUN go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -tags "${TAGS
 FROM alpine:3.14
 WORKDIR /app
 COPY --from=builder /app/bin/semantic-release /usr/local/bin/semantic-release
+RUN apk add --no-cache git
 
 VOLUME /app
 ENTRYPOINT ["/usr/local/bin/semantic-release"]

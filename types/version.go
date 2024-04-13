@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/wintbiit/semantic-release-go/git"
 )
 
 type Version struct {
@@ -15,7 +15,7 @@ type Version struct {
 }
 
 type SemverTag struct {
-	*plumbing.Reference
+	*git.Commit
 	Version
 }
 
@@ -36,5 +36,5 @@ func (v *Version) SameFrom(s Version) bool {
 }
 
 func (s SemverTag) String() string {
-	return s.Version.String() + " " + s.Hash().String()[0:7]
+	return s.Version.String() + " " + s.Hash[0:7]
 }

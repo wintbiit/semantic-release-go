@@ -28,3 +28,6 @@ semantic-release -path <path> -branch <branch>
 
 ## Inspired by
 - [semantic-release](https://semantic-release.gitbook.io/)
+
+## Note
+Before v1.4.5, this project uses `go-git` as git parser, but it's incomplete and buggy. So, I switched to `os/exec` for git commands.

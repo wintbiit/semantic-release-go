@@ -1,14 +1,12 @@
 package utils
 
 import (
-	"fmt"
-
 	"github.com/wintbiit/semantic-release-go/types"
 )
 
 // HashShort convert long hash to short hash.
-func HashShort(s fmt.Stringer) string {
-	return s.String()[:8]
+func HashShort(s string) string {
+	return s[:8]
 }
 
 func ChannelValid(channel string) bool {

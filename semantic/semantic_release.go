@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-git/go-git/v5/config"
+	"github.com/wintbiit/semantic-release-go/git"
 
-	"github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
 	"github.com/wintbiit/semantic-release-go/analyze"
 	"github.com/wintbiit/semantic-release-go/output"
@@ -17,7 +16,7 @@ import (
 )
 
 func Run(opt types.SemanticOptions) {
-	r, err := git.PlainOpen(opt.Path)
+	r, err := git.Open(opt.Path)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Not a git repository")
 	}
@@ -39,36 +38,28 @@ func Run(opt types.SemanticOptions) {
 		log.Fatal().Err(err).Msg("Failed to scan tags")
 	}
 
-	currentCommit, err := r.Head()
+	currentCommit, err := r.LastCommit()
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to get current commit")
 	}
 
-	log.Info().Msgf("Current commit: %v", utils.HashShort(currentCommit.Hash()))
+	log.Info().Msgf("Current commit: %v", utils.HashShort(currentCommit.Hash))
 	log.Info().Msgf("Using channel: %s, branch: %s", opt.Channel, opt.Branch)
 
 	initRelease := len(scannedTags) == 0
 	if initRelease {
 		log.Info().Msgf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", opt.Branch, opt.Channel)
+		result.Commits, err = r.Commits()
 	} else {
 		result.LatestRelease = scannedTags[len(scannedTags)-1]
 		log.Info().Msgf("Last release: %s", result.LatestRelease.String())
+		result.Commits, err = r.CommitsSince(result.LatestRelease.Hash)
 	}
 
-	// get commits since last version
-	commits, err := r.CommitObjects()
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to get commit objects")
-	}
-
-	log.Debug().Msgf("Commit objects: %v", commits)
-
-	sinceCommits, err := utils.CommitsSince(commits, utils.HashShort(currentCommit.Hash()))
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to get commits since last version")
 	}
 
-	result.Commits = sinceCommits
 	if len(result.Commits) == 0 {
 		log.Info().Msg("No commits since last version")
 		return
@@ -77,8 +68,8 @@ func Run(opt types.SemanticOptions) {
 	log.Info().Msg("Analyzing commits...")
 
 	result.NextRelease = types.SemverTag{
-		Reference: currentCommit,
-		Version:   result.LatestRelease.Version,
+		Commit:  currentCommit,
+		Version: result.LatestRelease.Version,
 	}
 	result.NextRelease.Version.Channel = opt.Channel
 	result.NextRelease.Version.Branch = opt.Branch
@@ -109,24 +100,16 @@ func Run(opt types.SemanticOptions) {
 
 	if !opt.Dry {
 		if opt.Tag {
-			// create tag
-			if _, err = r.CreateTag(result.NextRelease.Version.Tag(), result.NextRelease.Hash(), &git.CreateTagOptions{
-				Message: result.NextRelease.Version.String(),
-			}); err != nil {
+			if _, err = r.CreateTag(
+				result.NextRelease.Version.Tag(),
+				result.NextRelease.Hash,
+				result.NextRelease.Version.String()); err != nil {
 				log.Fatal().Err(err).Msg("Failed to create tag")
 			}
 		}
 
 		if opt.Push {
-			// push tag
-			err = r.Push(&git.PushOptions{
-				RemoteName: "origin",
-				RefSpecs: []config.RefSpec{
-					config.RefSpec("refs/tags/" + result.NextRelease.Version.Tag() + ":refs/tags/" + result.NextRelease.Version.Tag()),
-				},
-			})
-
-			if err != nil {
+			if err = r.PushCommit(result.NextRelease.Hash); err != nil {
 				log.Fatal().Err(err).Msg("Failed to push tag")
 			}
 		}

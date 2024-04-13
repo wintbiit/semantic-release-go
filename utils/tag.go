@@ -4,30 +4,23 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/wintbiit/semantic-release-go/types"
+	"github.com/wintbiit/semantic-release-go/git"
 
-	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/go-git/go-git/v5/plumbing/storer"
+	"github.com/wintbiit/semantic-release-go/types"
 )
 
 const VersionFormat = "%s %s v%d.%d.%d"
 
-func History(tags storer.ReferenceIter, season string, channel string) ([]types.SemverTag, error) {
+func History(tags []*git.Tag, season string, channel string) ([]types.SemverTag, error) {
 	var semverTags []types.SemverTag
-	var ref *plumbing.Reference
+	var ref *git.Tag
 	var tagStr, currSeason, currChannel string
 	var major, minor, patch int
 	var semverTag types.SemverTag
 	var err error
 
-	for {
-		ref, err = tags.Next()
-		if err != nil || !ref.Name().IsTag() {
-			break
-		}
-
-		tagStr = ref.Name().Short()
-		tagStr = strings.ReplaceAll(tagStr, "/", " ")
+	for _, ref = range tags {
+		tagStr = strings.ReplaceAll(ref.Name, "/", " ")
 		// check if fits the format
 		if _, err = fmt.Sscanf(tagStr, VersionFormat, &currSeason, &currChannel, &major, &minor, &patch); err != nil {
 			continue
@@ -39,7 +32,7 @@ func History(tags storer.ReferenceIter, season string, channel string) ([]types.
 		}
 
 		semverTag = types.SemverTag{
-			Reference: ref,
+			Commit: ref.Commit,
 			Version: types.Version{
 				Branch:  currSeason,
 				Channel: currChannel,

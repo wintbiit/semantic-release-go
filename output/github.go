@@ -26,13 +26,13 @@ func (o *GithubOutput) Output(result *types.Result, _ *types.SemanticOptions) er
 	setState("repo", result.Repo)
 	setOutput("built", result.Built.Format("2006-01-02 15:04:05"))
 	setOutput("release.next.version", result.NextRelease.Version.ShortString())
-	setOutput("release.next.hash", result.NextRelease.Hash().String())
+	setOutput("release.next.hash", result.NextRelease.Hash)
 	setOutput("release.next.major", fmt.Sprintf("%d", result.NextRelease.Major))
 	setOutput("release.next.minor", fmt.Sprintf("%d", result.NextRelease.Minor))
 	setOutput("release.next.patch", fmt.Sprintf("%d", result.NextRelease.Patch))
-	if result.LatestRelease.Reference != nil {
+	if result.LatestRelease.Commit != nil {
 		setOutput("release.latest.version", result.LatestRelease.Version.ShortString())
-		setOutput("release.latest.hash", result.LatestRelease.Hash().String())
+		setOutput("release.latest.hash", result.LatestRelease.Hash)
 		setOutput("release.latest.major", fmt.Sprintf("%d", result.LatestRelease.Major))
 		setOutput("release.latest.minor", fmt.Sprintf("%d", result.LatestRelease.Minor))
 		setOutput("release.latest.patch", fmt.Sprintf("%d", result.LatestRelease.Patch))
