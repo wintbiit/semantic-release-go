@@ -35,6 +35,7 @@ type Result struct {
 	Branch        string
 	Channel       string
 	Built         time.Time
+	NewRelease    bool
 	NextRelease   SemverTag
 	LatestRelease SemverTag
 	ReleaseType   string

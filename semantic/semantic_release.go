@@ -3,13 +3,13 @@ package semantic
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/wintbiit/semantic-release-go/output"
 	"time"
 
 	"github.com/wintbiit/semantic-release-go/git"
 
 	"github.com/rs/zerolog/log"
 	"github.com/wintbiit/semantic-release-go/analyze"
-	"github.com/wintbiit/semantic-release-go/output"
 	"github.com/wintbiit/semantic-release-go/types"
 
 	"github.com/wintbiit/semantic-release-go/utils"
@@ -22,11 +22,20 @@ func Run(opt types.SemanticOptions) {
 	}
 
 	result := &types.Result{
-		Branch:  opt.Branch,
-		Channel: opt.Channel,
-		Repo:    opt.Repo,
-		Built:   time.Now(),
+		Branch:     opt.Branch,
+		Channel:    opt.Channel,
+		Repo:       opt.Repo,
+		NewRelease: false,
+		Built:      time.Now(),
 	}
+
+	defer func() {
+		// output result
+		outputs := output.Output(result, &opt)
+		log.Info().Msg("Output done")
+		j, _ := json.MarshalIndent(outputs, "", "  ")
+		fmt.Println(string(j))
+	}()
 
 	tags, err := r.Tags()
 	if err != nil {
@@ -62,6 +71,10 @@ func Run(opt types.SemanticOptions) {
 
 	if len(result.Commits) == 0 {
 		log.Info().Msg("No commits since last version")
+		if !initRelease {
+			log.Info().Msg("")
+			result.NextRelease = result.LatestRelease
+		}
 		return
 	}
 
@@ -82,6 +95,10 @@ func Run(opt types.SemanticOptions) {
 	if !initRelease {
 		if result.NextRelease.Version.SameFrom(result.LatestRelease.Version) {
 			log.Info().Msg("No new version to release")
+			if !initRelease {
+				log.Info().Msg("")
+				result.NextRelease = result.LatestRelease
+			}
 			return
 		}
 	} else {
@@ -90,13 +107,9 @@ func Run(opt types.SemanticOptions) {
 		result.NextRelease.Version.Patch = 0
 	}
 
-	log.Info().Str("next_release", result.NextRelease.String()).Str("release_type", result.ReleaseType).Msg("New version to release")
+	result.NewRelease = true
 
-	// output result
-	outputs := output.Output(result, &opt)
-	log.Info().Msg("Output done")
-	j, _ := json.MarshalIndent(outputs, "", "  ")
-	fmt.Println(string(j))
+	log.Info().Str("next_release", result.NextRelease.String()).Str("release_type", result.ReleaseType).Msg("New version to release")
 
 	if !opt.Dry {
 		if opt.Tag {
