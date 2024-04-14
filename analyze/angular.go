@@ -160,6 +160,10 @@ func (a *AngularAnalyzer) Analyze(result *types.Result, _ *types.SemanticOptions
 				result.ReleaseNotes[i.title] = make([]types.ReleaseNote, 0)
 			}
 
+			if i.ReleaseNote == nil {
+				continue
+			}
+
 			result.ReleaseNotes[i.title] = append(result.ReleaseNotes[i.title], *i.ReleaseNote)
 
 			if !majorHit && slices.Contains(majorIters, i.title) {
@@ -173,6 +177,8 @@ func (a *AngularAnalyzer) Analyze(result *types.Result, _ *types.SemanticOptions
 	}()
 
 	wg.Wait()
+	// ensure channel processor has received all messages
+	ch <- info{}
 	close(ch)
 
 	if majorHit {
