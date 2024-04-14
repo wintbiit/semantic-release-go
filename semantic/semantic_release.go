@@ -3,8 +3,9 @@ package semantic
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/wintbiit/semantic-release-go/output"
 	"time"
+
+	"github.com/wintbiit/semantic-release-go/output"
 
 	"github.com/wintbiit/semantic-release-go/git"
 
