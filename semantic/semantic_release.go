@@ -60,7 +60,7 @@ func Run(opt types.SemanticOptions) {
 		log.Info().Msgf("No history of %s %s, will use vcs tree tail and release first version v1.0.0", opt.Branch, opt.Channel)
 		result.Commits, err = r.Commits()
 	} else {
-		result.LatestRelease = scannedTags[len(scannedTags)-1]
+		result.LatestRelease = scannedTags[0]
 		log.Info().Msgf("Last release: %s", result.LatestRelease.String())
 		result.Commits, err = r.CommitsSince(result.LatestRelease.Hash)
 	}
