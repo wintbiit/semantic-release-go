@@ -54,8 +54,8 @@ func (n *ReleaseNote) Describe(repo string) string {
 	commitUrl := fmt.Sprintf("%s/commit/%s", repo, n.Commit.Hash)
 
 	if n.Scope != "" {
-		return fmt.Sprintf("- [%s](%s) [**%s**]: %s @[%s](mailto://%s)\n", n.Commit.Hash[0:7], commitUrl, n.Scope, n.Desc, n.Commit.Author.Name, n.Commit.Author.Email)
+		return fmt.Sprintf("- [%s](%s) [**%s**]: %s [@%s](mailto://%s)\n", n.Commit.Hash[0:7], commitUrl, n.Scope, n.Desc, n.Commit.Author.Name, n.Commit.Author.Email)
 	} else {
-		return fmt.Sprintf("- [%s](%s) %s @[%s](mailto://%s)\n", n.Commit.Hash[0:7], commitUrl, n.Desc, n.Commit.Author.Name, n.Commit.Author.Email)
+		return fmt.Sprintf("- [%s](%s) %s [@%s](mailto://%s)\n", n.Commit.Hash[0:7], commitUrl, n.Desc, n.Commit.Author.Name, n.Commit.Author.Email)
 	}
 }
