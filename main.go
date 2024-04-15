@@ -16,7 +16,6 @@ import (
 
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	log.Info().Str("version", version).Msg("Starting semantic-release-go")
 
 	logF, err := os.OpenFile(".semantic-release.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
 	if err != nil {
@@ -36,6 +35,8 @@ func main() {
 	defer func() {
 		log.Info().Str("elapsed", time.Since(start).String()).Msg("Semantic release done")
 	}()
+
+	log.Info().Str("version", version).Time("started", start).Msg("Starting semantic-release-go")
 
 	var opt types.SemanticOptions
 	var debug bool

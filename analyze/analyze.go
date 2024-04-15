@@ -22,7 +22,6 @@ func RegisterAnalyzer(name string, analyzer IAnalyzer) {
 }
 
 func GetAnalyzer(name string) IAnalyzer {
-	registeredAnalyzers := registeredAnalyzers
 	if len(registeredAnalyzers) == 0 {
 		log.Fatal().Msg("No analyzers registered")
 	}
