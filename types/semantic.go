@@ -19,15 +19,16 @@ const (
 )
 
 type SemanticOptions struct {
-	Path      string
-	Channel   string
-	Branch    string
-	Analyzer  string
-	Repo      string
-	Dry       bool
-	Tag       bool
-	Push      bool
-	Changelog string
+	Path            string
+	Channel         string
+	Branch          string
+	Analyzer        string
+	Repo            string
+	Dry             bool
+	Tag             bool
+	Push            bool
+	Changelog       string
+	ChangelogAppend bool
 }
 
 type Result struct {

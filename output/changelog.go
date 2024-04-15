@@ -16,7 +16,14 @@ func (o *ChangeLogOutput) Output(result *types.Result, opt *types.SemanticOption
 		return nil
 	}
 	log.Info().Msg("Outputting changelog")
-	f, err := os.OpenFile(opt.Changelog, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
+
+	flag := os.O_CREATE | os.O_WRONLY
+	if opt.ChangelogAppend {
+		flag |= os.O_APPEND
+	} else {
+		flag |= os.O_TRUNC
+	}
+	f, err := os.OpenFile(opt.Changelog, flag, 0o666)
 	if err != nil {
 		return err
 	}
