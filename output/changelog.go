@@ -29,7 +29,7 @@ func (o *ChangeLogOutput) Output(result *types.Result, opt *types.SemanticOption
 	}
 	defer f.Close()
 
-	_, err = f.WriteString(fmt.Sprintf("# Changelog %s\n\n", result.LatestRelease.Version.ShortString()))
+	_, err = f.WriteString(fmt.Sprintf("# Changelog %s\n\n", result.NextRelease.Version.ShortString()))
 	if err != nil {
 		return err
 	}
