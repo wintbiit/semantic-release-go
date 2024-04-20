@@ -80,8 +80,8 @@ var typeMap = map[string]string{
 }
 
 var (
-	patchIters = []string{FieldFixTitle, FieldPerformanceTitle, FieldSecurityTitle}
-	minorIters = []string{FieldFeatureTitle, FieldBreakingTitle, FieldRefactorTitle, FieldStyleTitle, FieldChoreTitle, FieldRevertTitle, FieldDependencyTitle}
+	patchIters = []string{FieldFixTitle, FieldPerformanceTitle, FieldSecurityTitle, FieldRevertTitle}
+	minorIters = []string{FieldFeatureTitle, FieldBreakingTitle, FieldRefactorTitle, FieldStyleTitle, FieldChoreTitle, FieldDependencyTitle}
 	majorIters = []string{FieldBreakingTitle}
 )
 
@@ -184,9 +184,12 @@ func (a *AngularAnalyzer) Analyze(result *types.Result, _ *types.SemanticOptions
 	if majorHit {
 		result.ReleaseType = types.ReleaseTypeMajor
 		result.NextRelease.Major++
+		result.NextRelease.Minor = 0
+		result.NextRelease.Patch = 0
 	} else if minorHit {
 		result.ReleaseType = types.ReleaseTypeMinor
 		result.NextRelease.Minor++
+		result.NextRelease.Patch = 0
 	} else if patchHit {
 		result.ReleaseType = types.ReleaseTypePatch
 		result.NextRelease.Patch++
